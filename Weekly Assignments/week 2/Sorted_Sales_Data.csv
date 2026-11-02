@@ -1,0 +1,11 @@
+Order_ID,Category,Product,Quantity,Unit_Price,Revenue
+106,Electronics,Headphones,5,1000,5000
+102,Clothing,Shirt,5,800,4000
+104,Furniture,Chair,4,2000,8000
+103,Electronics,Mobile,3,15000,45000
+108,Clothing,Jeans,3,1500,4500
+101,Electronics,Laptop,2,50000,100000
+109,Electronics,Tablet,2,20000,40000
+107,Furniture,Table,2,5000,10000
+105,Clothing,Shoes,2,2500,5000
+110,Furniture,Sofa,1,15000,15000
