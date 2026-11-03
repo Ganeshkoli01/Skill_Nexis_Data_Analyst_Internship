@@ -1,0 +1,105 @@
+// ===================================================================
+// SKILLNEXIS CAPSTONE PROJECT - POWER BI DAX MEASURES
+// Dataset: Cleaned_Sales_Data
+// ===================================================================
+
+// -------------------------------------------------------------
+// 1. CORE VOLUME & REVENUE MEASURES
+// -------------------------------------------------------------
+
+Total Units Sold = 
+SUM('Cleaned_Sales_Data'[Units Sold])
+
+Total Gross Sales = 
+SUM('Cleaned_Sales_Data'[Gross Sales])
+
+Total Discounts = 
+SUM('Cleaned_Sales_Data'[Discounts])
+
+Total Net Sales = 
+SUM('Cleaned_Sales_Data'[Sales])
+
+Total COGS = 
+SUM('Cleaned_Sales_Data'[COGS])
+
+Total Profit = 
+SUM('Cleaned_Sales_Data'[Profit])
+
+
+// -------------------------------------------------------------
+// 2. PROFITABILITY & MARGIN RATIOS
+// -------------------------------------------------------------
+
+Gross Profit Margin % = 
+DIVIDE([Total Profit], [Total Net Sales], 0)
+
+Discount Rate % = 
+DIVIDE([Total Discounts], [Total Gross Sales], 0)
+
+Average Sale Price = 
+AVERAGE('Cleaned_Sales_Data'[Sale Price])
+
+Average Manufacturing Cost = 
+AVERAGE('Cleaned_Sales_Data'[Manufacturing Price])
+
+Cost-to-Sales Ratio % = 
+DIVIDE([Total COGS], [Total Net Sales], 0)
+
+
+// -------------------------------------------------------------
+// 3. TIME INTELLIGENCE & YEAR-OVER-YEAR (YOY) GROWTH
+// -------------------------------------------------------------
+
+Sales 2013 = 
+CALCULATE(
+    [Total Net Sales],
+    'Cleaned_Sales_Data'[Year] = 2013
+)
+
+Sales 2014 = 
+CALCULATE(
+    [Total Net Sales],
+    'Cleaned_Sales_Data'[Year] = 2014
+)
+
+YoY Sales Growth ($) = 
+[Sales 2014] - [Sales 2013]
+
+YoY Sales Growth % = 
+DIVIDE([YoY Sales Growth ($)], [Sales 2013], 0)
+
+Profit 2013 = 
+CALCULATE(
+    [Total Profit],
+    'Cleaned_Sales_Data'[Year] = 2013
+)
+
+Profit 2014 = 
+CALCULATE(
+    [Total Profit],
+    'Cleaned_Sales_Data'[Year] = 2014
+)
+
+YoY Profit Growth % = 
+DIVIDE([Profit 2014] - [Profit 2013], [Profit 2013], 0)
+
+
+// -------------------------------------------------------------
+// 4. SEGMENT & DISCOUNT PERFORMANCE KPI FLAGS
+// -------------------------------------------------------------
+
+Enterprise Net Profit Flag = 
+IF(
+    CALCULATE([Total Profit], 'Cleaned_Sales_Data'[Segment] = "Enterprise") < 0,
+    "Critical Attention: Enterprise Margin Negative",
+    "Normal"
+)
+
+Discount Risk Category = 
+SWITCH(
+    TRUE(),
+    [Discount Rate %] >= 0.15, "High Discount Risk (>15%)",
+    [Discount Rate %] >= 0.08, "Moderate Discounting (8-15%)",
+    "Healthy Margin (<8%)"
+)
+

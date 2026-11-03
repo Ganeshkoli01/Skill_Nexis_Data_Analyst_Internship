@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillNexis Capstone: Financial Sales & Profitability Dashboard</title>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+        body {
+            background-color: #f0f2f5;
+            color: #262626;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1f4e79 0%, #0d233a 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 13px;
+            color: #cce0ff;
+            margin-top: 4px;
+        }
+        .badge {
+            background-color: #2ca02c;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 5px solid #1f4e79;
+            transition: transform 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+        }
+        .kpi-card.green { border-left-color: #2ca02c; }
+        .kpi-card.amber { border-left-color: #ff9800; }
+        .kpi-card.purple { border-left-color: #9c27b0; }
+        .kpi-card.red { border-left-color: #d32f2f; }
+        .kpi-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #737373;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 6px 0 3px 0;
+        }
+        .kpi-subtext {
+            font-size: 11px;
+            color: #555;
+        }
+
+        /* Charts Layout */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .charts-grid-equal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 900px) {
+            .charts-grid, .charts-grid-equal {
+                grid-template-columns: 1fr;
+            }
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .card-header {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f4e79;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+        .chart-container {
+            position: relative;
+            height: 270px;
+            width: 100%;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        th, td {
+            padding: 9px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f7f9fb;
+            font-weight: 600;
+            color: #444;
+        }
+        tr:hover {
+            background-color: #fafbfc;
+        }
+        .negative {
+            color: #d32f2f;
+            font-weight: 600;
+        }
+        .positive {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+        .insights-box {
+            background: #eef4fa;
+            border-left: 4px solid #1f4e79;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h1>SkillNexis Capstone: Financial Performance & Sales Forecasting Dashboard</h1>
+            <p>End-to-End Analytics Case Study • Data Analyst Internship Portfolio Project</p>
+        </div>
+        <div>
+            <span class="badge">Week 4 Capstone Ready</span>
+        </div>
+    </div>
+
+    <!-- 5 Top KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-title">Total Net Sales</div>
+            <div class="kpi-value">$118.73M</div>
+            <div class="kpi-subtext">Across 700 transactions (2013-2014)</div>
+        </div>
+        <div class="kpi-card green">
+            <div class="kpi-title">Total Net Profit</div>
+            <div class="kpi-value">$16.89M</div>
+            <div class="kpi-subtext">14.23% realized net margin</div>
+        </div>
+        <div class="kpi-card purple">
+            <div class="kpi-title">Total Volume Sold</div>
+            <div class="kpi-value">1,125,808</div>
+            <div class="kpi-subtext">Units across 6 product families</div>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-title">Total Discounts Given</div>
+            <div class="kpi-value">$9.21M</div>
+            <div class="kpi-subtext">7.2% overall revenue markdown</div>
+        </div>
+        <div class="kpi-card amber">
+            <div class="kpi-title">ML Forecasting Accuracy</div>
+            <div class="kpi-value">99.50% R²</div>
+            <div class="kpi-subtext">Gradient Boosting (MAPE: 2.90%)</div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1: Monthly Trend & Segment Performance -->
+    <div class="charts-grid">
+        <div class="card">
+            <div class="card-header">
+                <span>Monthly Net Sales Seasonality Trend (2013 vs 2014)</span>
+                <span style="font-size: 11px; color: #888;">Sales in Millions ($)</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="monthlyTrendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>Product Revenue Share</span>
+                <span style="font-size: 11px; color: #888;">% of Total Sales</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="productShareChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2: Segment Breakdown & Country Margin -->
+    <div class="charts-grid-equal">
+        <div class="card">
+            <div class="card-header">
+                <span>Sales & Profit by Customer Segment ($ Millions)</span>
+                <span style="font-size: 11px; color: #888;">Highlighting Enterprise Margin Deficit</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="segmentChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>Country Profitability Margin (%)</span>
+                <span style="font-size: 11px; color: #888;">France & Germany Leading</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="countryChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 3: Discount Erosion & Machine Learning Benchmark -->
+    <div class="charts-grid-equal">
+        <div class="card">
+            <div class="card-header">
+                <span>Profit Margin Erosion by Discount Band Tier</span>
+                <span style="font-size: 11px; color: #888;">High Discounts Reduce Margin to 9.07%</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="discountChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>Machine Learning Regression Model Comparison (Test R²)</span>
+                <span style="font-size: 11px; color: #888;">Gradient Boosting vs Linear & Trees</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="mlModelChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Executive Summary Table & Findings -->
+    <div class="card">
+        <div class="card-header">
+            <span>Executive Segment Performance Ledger</span>
+            <span style="font-size: 11px; color: #888;">Consolidated Audit Report</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer Segment</th>
+                    <th>Orders</th>
+                    <th>Units Sold</th>
+                    <th>Gross Sales ($)</th>
+                    <th>Discounts ($)</th>
+                    <th>Net Sales ($)</th>
+                    <th>Net Profit ($)</th>
+                    <th>Profit Margin (%)</th>
+                    <th>Strategic Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Government</strong></td>
+                    <td>300</td>
+                    <td>470,674</td>
+                    <td>$56,403,345</td>
+                    <td>$3,899,084</td>
+                    <td>$52,504,261</td>
+                    <td class="positive">$11,388,173</td>
+                    <td class="positive">21.69%</td>
+                    <td>Core Growth Driver</td>
+                </tr>
+                <tr>
+                    <td><strong>Small Business</strong></td>
+                    <td>100</td>
+                    <td>153,139</td>
+                    <td>$45,958,500</td>
+                    <td>$3,530,581</td>
+                    <td>$42,427,919</td>
+                    <td class="positive">$4,143,169</td>
+                    <td class="positive">9.77%</td>
+                    <td>High Volume / Moderate Margin</td>
+                </tr>
+                <tr>
+                    <td><strong>Enterprise</strong></td>
+                    <td>100</td>
+                    <td>168,552</td>
+                    <td>$21,114,350</td>
+                    <td>$1,502,656</td>
+                    <td>$19,611,694</td>
+                    <td class="negative">-$614,546</td>
+                    <td class="negative">-3.13%</td>
+                    <td><strong style="color: #d32f2f;">Critical: Operating at Loss</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Midmarket</strong></td>
+                    <td>100</td>
+                    <td>172,178</td>
+                    <td>$2,572,425</td>
+                    <td>$190,542</td>
+                    <td>$2,381,883</td>
+                    <td class="positive">$660,103</td>
+                    <td class="positive">27.71%</td>
+                    <td>Healthy Margin Niche</td>
+                </tr>
+                <tr>
+                    <td><strong>Channel Partners</strong></td>
+                    <td>100</td>
+                    <td>161,264</td>
+                    <td>$1,894,775</td>
+                    <td>$94,181</td>
+                    <td>$1,800,594</td>
+                    <td class="positive">$1,316,803</td>
+                    <td class="positive">73.13%</td>
+                    <td>Maximum Margin Scaler</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="insights-box">
+            <strong>Key Executive Recommendations:</strong>
+            <ul style="margin-left: 20px; margin-top: 8px;">
+                <li><strong>Turn Around Enterprise Segment:</strong> Enforce strict price-floor policies and renegotiate delivery SLAs to reverse the -$614K operating deficit.</li>
+                <li><strong>Curtail High Discount Tiers:</strong> High-discount sales surrendered $5.32M in discounts while reducing margin by more than 12.8 percentage points. Transition enterprise accounts to Medium discount tiers.</li>
+                <li><strong>Expand Channel Partner Ecosystem:</strong> Channel partners deliver a phenomenal 73.13% profit margin with minimal overhead. Reallocate sales development capacity toward recruitment in Europe and Canada.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Chart Configuration Script -->
+    <script>
+        // 1. Monthly Trend Chart
+        const months = ['Sep 13', 'Oct 13', 'Nov 13', 'Dec 13', 'Jan 14', 'Feb 14', 'Mar 14', 'Apr 14', 'May 14', 'Jun 14', 'Jul 14', 'Aug 14', 'Sep 14', 'Oct 14', 'Nov 14', 'Dec 14'];
+        const monthlySales = [3.06, 6.70, 7.37, 9.28, 6.70, 6.84, 5.76, 6.94, 6.27, 8.44, 5.56, 6.24, 6.13, 10.74, 9.47, 12.98];
+
+        new Chart(document.getElementById('monthlyTrendChart'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Net Sales ($M)',
+                    data: monthlySales,
+                    borderColor: '#1f4e79',
+                    backgroundColor: 'rgba(31, 78, 121, 0.12)',
+                    fill: true,
+                    tension: 0.3,
+                    borderWidth: 2.5,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#1f4e79'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: false, ticks: { callback: v => '$' + v + 'M' } },
+                    x: { ticks: { font: { size: 10 } } }
+                }
+            }
+        });
+
+        // 2. Product Share Chart
+        new Chart(document.getElementById('productShareChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Paseo', 'VTT', 'Velo', 'Amarilla', 'Montana', 'Carretera'],
+                datasets: [{
+                    data: [33.01, 20.51, 18.25, 17.75, 15.39, 13.82],
+                    backgroundColor: ['#1f4e79', '#2ca02c', '#ff7f0e', '#9467bd', '#8c564b', '#e377c2']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } }
+                }
+            }
+        });
+
+        // 3. Segment Chart
+        new Chart(document.getElementById('segmentChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Government', 'Small Business', 'Enterprise', 'Midmarket', 'Channel Part.'],
+                datasets: [
+                    {
+                        label: 'Sales ($M)',
+                        data: [52.50, 42.43, 19.61, 2.38, 1.80],
+                        backgroundColor: '#1f4e79'
+                    },
+                    {
+                        label: 'Profit ($M)',
+                        data: [11.39, 4.14, -0.61, 0.66, 1.32],
+                        backgroundColor: '#2ca02c'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { ticks: { callback: v => '$' + v + 'M' } }
+                }
+            }
+        });
+
+        // 4. Country Chart
+        new Chart(document.getElementById('countryChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Germany', 'France', 'Canada', 'Mexico', 'United States'],
+                datasets: [{
+                    label: 'Profit Margin (%)',
+                    data: [15.66, 15.53, 14.18, 13.88, 11.97],
+                    backgroundColor: ['#2e7d32', '#2e7d32', '#1976d2', '#1976d2', '#ff9800']
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { callback: v => v + '%' } }
+                }
+            }
+        });
+
+        // 5. Discount Chart
+        new Chart(document.getElementById('discountChart'), {
+            type: 'bar',
+            data: {
+                labels: ['None (0%)', 'Low (1-4%)', 'Medium (5-8%)', 'High (9-15%)'],
+                datasets: [{
+                    label: 'Net Margin (%)',
+                    data: [21.86, 17.87, 14.39, 9.07],
+                    backgroundColor: ['#43a047', '#fdd835', '#fb8c00', '#e53935']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { ticks: { callback: v => v + '%' } }
+                }
+            }
+        });
+
+        // 6. ML Model Chart
+        new Chart(document.getElementById('mlModelChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Linear Reg.', 'Ridge Reg.', 'Lasso Reg.', 'Random Forest', 'Gradient Boosting'],
+                datasets: [{
+                    label: 'Test R² Score',
+                    data: [0.9971, 0.9971, 0.9971, 0.9922, 0.9950],
+                    backgroundColor: ['#90caf9', '#90caf9', '#90caf9', '#42a5f5', '#1565c0']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { min: 0.98, max: 1.0, ticks: { callback: v => (v * 100).toFixed(1) + '%' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
